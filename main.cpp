@@ -8,74 +8,74 @@
 using namespace cimg_library;
 using namespace std;
 
-// ¶¨ÒåÑÕÉ«³£Á¿
+// å®šä¹‰é¢œè‰²å¸¸é‡
 const unsigned char white[] = {255, 255, 255};
 const unsigned char black[] = {0, 0, 0};
 
-// Í¼Ïñ¶ÁÈ¡ÓëÏÔÊ¾µÄº¯Êı
+// å›¾åƒè¯»å–ä¸æ˜¾ç¤ºçš„å‡½æ•°
 void showImage(const string &filename) {
     CImg<unsigned char> img(filename.c_str());
     img.display(("Display: " + filename).c_str());
 }
 
 
-// ²ÊÉ«Í¼Ïñ×ª»Ò¶ÈÍ¼ÏñµÄº¯Êı
+// å½©è‰²å›¾åƒè½¬ç°åº¦å›¾åƒçš„å‡½æ•°
 void colorToGray(const string &input, const string &output) {
     CImg<unsigned char> color(input.c_str());
     
     CImg<unsigned char> gray = color.get_RGBtoYCbCr().get_channel(0);
     gray.display("Gray Image");
 
-    // ±£´æÎª CImg µÄ ASCII ¸ñÊ½
+    // ä¿å­˜ä¸º CImg çš„ ASCII æ ¼å¼
     gray.save_ascii(output.c_str());
 
-    // ¶ÁÈ¡¸Õ¸Õ±£´æµÄÄÚÈİ
+    // è¯»å–åˆšåˆšä¿å­˜çš„å†…å®¹
     ifstream fin(output);
     if (!fin) {
-        cerr << "ÎŞ·¨¶ÁÈ¡±£´æµÄÎÄ¼ş£º" << output << endl;
+        cerr << "æ— æ³•è¯»å–ä¿å­˜çš„æ–‡ä»¶ï¼š" << output << endl;
         return;
     }
 
-    // ¶ÁÈ¡µÚÒ»ĞĞ
+    // è¯»å–ç¬¬ä¸€è¡Œ
     string header_line;
     getline(fin, header_line);
 
-    // Ê£Óà²¿·Ö£¨ÏñËØÊı¾İ£©
+    // å‰©ä½™éƒ¨åˆ†ï¼ˆåƒç´ æ•°æ®ï¼‰
     string data((istreambuf_iterator<char>(fin)), istreambuf_iterator<char>());
     fin.close();
 
-    // ÖØĞÂĞ´»Ø²¢¼ÓÉÏ±ê×¼ P2 Í·²¿
-    // ÕâÀïÊÇÒòÎªCimg¿âÖĞÊ¹ÓÃsave_asciiÂëµÃµ½µÄ²¢·Ç±ê×¼µÄppm¸ñÊ½£¬ĞèÒªÎªÆäÌí¼ÓÎÄ¼şÍ·²¿ĞÅÏ¢£¬²ÅÄÜÈÃXnViewer¶ÁÈ¡
+    // é‡æ–°å†™å›å¹¶åŠ ä¸Šæ ‡å‡† P2 å¤´éƒ¨
+    // è¿™é‡Œæ˜¯å› ä¸ºCimgåº“ä¸­ä½¿ç”¨save_asciiç å¾—åˆ°çš„å¹¶éæ ‡å‡†çš„ppmæ ¼å¼ï¼Œéœ€è¦ä¸ºå…¶æ·»åŠ æ–‡ä»¶å¤´éƒ¨ä¿¡æ¯ï¼Œæ‰èƒ½è®©XnViewerè¯»å–
     ofstream fout(output);
     fout << "P2\n" << gray.width() << " " << gray.height() << "\n255\n";
     fout << data;
     fout.close();
 
-    cout << "ÒÑ±£´æ±ê×¼ P2 »Ò¶ÈÍ¼Ïñ£º" << output << endl;
+    cout << "å·²ä¿å­˜æ ‡å‡† P2 ç°åº¦å›¾åƒï¼š" << output << endl;
 }
 
 
 
 
-// ÊµÏÖÍ¼ÏñËõ·ÅµÄº¯Êı
+// å®ç°å›¾åƒç¼©æ”¾çš„å‡½æ•°
 void resizeImage(const string &input, const string &output, int newW, int newH) {
-    CImg<unsigned char> src(input.c_str());//¶ÁÈ¡ÊäÈëÍ¼ÏñÎÄ¼ş
+    CImg<unsigned char> src(input.c_str());//è¯»å–è¾“å…¥å›¾åƒæ–‡ä»¶
 
-    //µ÷ÓÃCimg¿âÖĞµÄresizeº¯Êı£¬Ê¹ÓÃinterpolation_type=1µÄË«ÏßĞÔ²åÖµÊµÏÖËõ·Å
+    //è°ƒç”¨Cimgåº“ä¸­çš„resizeå‡½æ•°ï¼Œä½¿ç”¨interpolation_type=1çš„åŒçº¿æ€§æ’å€¼å®ç°ç¼©æ”¾
     CImg<unsigned char> resized = src.resize(newW, newH,1);
     resized.display("Resized Image");
 
-    int spectrum = resized.spectrum();  // Í¨µÀÊı£¬ÓÃÓÚÇø·Ö²ÊÉ«Í¼ÏñºÍ»Ò¶ÈÍ¼Ïñ
+    int spectrum = resized.spectrum();  // é€šé“æ•°ï¼Œç”¨äºåŒºåˆ†å½©è‰²å›¾åƒå’Œç°åº¦å›¾åƒ
 
-    //¶ÔÓÚ²ÊÉ«ºÍ»Ò¶ÈÍ¼Ïñ£¬·Ö±ğÖ´ĞĞ¸÷×ÔµÄ´æ´¢·½Ê½
+    //å¯¹äºå½©è‰²å’Œç°åº¦å›¾åƒï¼Œåˆ†åˆ«æ‰§è¡Œå„è‡ªçš„å­˜å‚¨æ–¹å¼
     if (spectrum == 1) {
-        // Èç¹ûÊÇ»Ò¶ÈÍ¼Ïñ£¬¾Í´æ´¢ÆäasciiÂë£¬ÔÙĞŞ¸ÄÆäÎÄ¼şÍ·²¿ĞÅÏ¢£¬±äÎª±ê×¼µÄppm¸ñÊ½
+        // å¦‚æœæ˜¯ç°åº¦å›¾åƒï¼Œå°±å­˜å‚¨å…¶asciiç ï¼Œå†ä¿®æ”¹å…¶æ–‡ä»¶å¤´éƒ¨ä¿¡æ¯ï¼Œå˜ä¸ºæ ‡å‡†çš„ppmæ ¼å¼
         resized.save_ascii(output.c_str());
 
-        // È¥µôCImg×Ô¶¨ÒåÍ·²¢Ìæ»»Îª P2 Í·
+        // å»æ‰CImgè‡ªå®šä¹‰å¤´å¹¶æ›¿æ¢ä¸º P2 å¤´
         ifstream fin(output);
         string header_line;
-        std::getline(fin, header_line); // Ìø¹ıµÚÒ»ĞĞ
+        std::getline(fin, header_line); // è·³è¿‡ç¬¬ä¸€è¡Œ
         string data((istreambuf_iterator<char>(fin)), istreambuf_iterator<char>());
         fin.close();
 
@@ -84,46 +84,46 @@ void resizeImage(const string &input, const string &output, int newW, int newH) 
         fout << data;
         fout.close();
 
-        cout << "ÒÑ±£´æËõ·Å»Ò¶ÈÍ¼Ïñ (P2):" << output << endl;
+        cout << "å·²ä¿å­˜ç¼©æ”¾ç°åº¦å›¾åƒ (P2):" << output << endl;
     }
     else if (spectrum == 3) {
-        // Èç¹ûÊÇ²ÊÉ«Í¼Ïñ£¬ÓÉÓÚsave_asciiº¯Êı»á½«RGBÈı¸öÉ«²ÊÍ¨µÀ·Ö¿ª´æ´¢£¬µ¼ÖÂÎŞ·¨µÃµ½Õı³£µÄ²ÊÉ«Í¼Ïñ£¬ÓÚÊÇÊ¹ÓÃÊÖ¶¯´æ´¢µÄ·½·¨
+        // å¦‚æœæ˜¯å½©è‰²å›¾åƒï¼Œç”±äºsave_asciiå‡½æ•°ä¼šå°†RGBä¸‰ä¸ªè‰²å½©é€šé“åˆ†å¼€å­˜å‚¨ï¼Œå¯¼è‡´æ— æ³•å¾—åˆ°æ­£å¸¸çš„å½©è‰²å›¾åƒï¼Œäºæ˜¯ä½¿ç”¨æ‰‹åŠ¨å­˜å‚¨çš„æ–¹æ³•
         ofstream fout(output);
         fout << "P3\n" << resized.width() << " " << resized.height() << "\n255\n";
         
         for (int y = 0; y < resized.height(); y++) {
             for (int x = 0; x < resized.width(); x++) {
-                int r = resized(x, y, 0, 0);//±íÊ¾ºìÉ«Í¨µÀ
-                int g = resized(x, y, 0, 1);//±íÊ¾ÂÌÉ«Í¨µÀ
-                int b = resized(x, y, 0, 2);//±íÊ¾À¶É«Í¨µÀ
-                fout << r << " " << g << " " << b << " ";//ÊÖ¶¯Ğ´ÈëRGBÖµ
+                int r = resized(x, y, 0, 0);//è¡¨ç¤ºçº¢è‰²é€šé“
+                int g = resized(x, y, 0, 1);//è¡¨ç¤ºç»¿è‰²é€šé“
+                int b = resized(x, y, 0, 2);//è¡¨ç¤ºè“è‰²é€šé“
+                fout << r << " " << g << " " << b << " ";//æ‰‹åŠ¨å†™å…¥RGBå€¼
             }
             fout << "\n";
         }
         fout.close();
 
-        cout << "ÒÑ±£´æËõ·Å²ÊÉ«Í¼Ïñ (P3):" << output << endl;
+        cout << "å·²ä¿å­˜ç¼©æ”¾å½©è‰²å›¾åƒ (P3):" << output << endl;
     }
     else {
-        cerr << "·Ç±ê×¼Í¨µÀÊı£º" << spectrum << "£¬Î´±£´æ¡£" << endl;
+        cerr << "éæ ‡å‡†é€šé“æ•°ï¼š" << spectrum << "ï¼Œæœªä¿å­˜ã€‚" << endl;
     }
 }
 
 
 
-// ÊµÏÖÍ¼ÏñÑ¹ËõµÄº¯Êı£¨RLE£ºĞĞ³Ì³¤¶È±àÂëÑ¹ËõËã·¨£©
-// ½«ppm¸ñÊ½µÄÍ¼ÏñÑ¹ËõÎªtxt¸ñÊ½µÄÎÄ±¾ÎÄ¼ş
+// å®ç°å›¾åƒå‹ç¼©çš„å‡½æ•°ï¼ˆRLEï¼šè¡Œç¨‹é•¿åº¦ç¼–ç å‹ç¼©ç®—æ³•ï¼‰
+// å°†ppmæ ¼å¼çš„å›¾åƒå‹ç¼©ä¸ºtxtæ ¼å¼çš„æ–‡æœ¬æ–‡ä»¶
 void compressImage(const string &input, const string &compressedFile) {
     CImg<unsigned char> img(input.c_str());
     int w = img.width(), h = img.height(), c = img.spectrum();
 
     ofstream fout(compressedFile);
-    fout << w << " " << h << " " << c << "\n";//ÔÚÑ¹ËõµÄtxtÎÄ¼şµÄ¿ªÍ·Ğ´ÈëÍ¼ÏñµÄ¿í¡¢¸ß¡¢Í¨µÀÊı
+    fout << w << " " << h << " " << c << "\n";//åœ¨å‹ç¼©çš„txtæ–‡ä»¶çš„å¼€å¤´å†™å…¥å›¾åƒçš„å®½ã€é«˜ã€é€šé“æ•°
 
-    //¶Ô»Ò¶ÈÍ¼ÏñºÍ²ÊÉ«Í¼Ïñ·Ö±ğ½øĞĞRLEÑ¹Ëõ
+    //å¯¹ç°åº¦å›¾åƒå’Œå½©è‰²å›¾åƒåˆ†åˆ«è¿›è¡ŒRLEå‹ç¼©
     if (c == 1) {  
-        //»Ò¶ÈÍ¼Ïñ
-        //ÀıÈç£ºÏñËØÖµĞòÁĞÎª[5,5,5,2,2,3]£¬ÔòÑ¹ËõºóÎª[(5,3),(2,2),(3,1)]
+        //ç°åº¦å›¾åƒ
+        //ä¾‹å¦‚ï¼šåƒç´ å€¼åºåˆ—ä¸º[5,5,5,2,2,3]ï¼Œåˆ™å‹ç¼©åä¸º[(5,3),(2,2),(3,1)]
         vector<int> vals;
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
@@ -138,9 +138,9 @@ void compressImage(const string &input, const string &compressedFile) {
             }
         }
     } else if (c >= 3) { 
-        //²ÊÉ«Í¼Ïñ
-        //ÓÉÓÚ²ÊÉ«Í¼ÏñÃ¿¸öÏñËØÓĞÈı¸öÍ¨µÀ£¬Ê¹ÓÃÈıÔª×é(r,g,b)À´±íÊ¾Ò»¸öÏñËØÖµ
-        //ÀıÈç£ºÏñËØÖµĞòÁĞÎª[(255,0,0),(255,0,0),(0,255,0)]£¬ÔòÑ¹ËõºóÎª[((255,0,0),2),((0,255,0),1)]
+        //å½©è‰²å›¾åƒ
+        //ç”±äºå½©è‰²å›¾åƒæ¯ä¸ªåƒç´ æœ‰ä¸‰ä¸ªé€šé“ï¼Œä½¿ç”¨ä¸‰å…ƒç»„(r,g,b)æ¥è¡¨ç¤ºä¸€ä¸ªåƒç´ å€¼
+        //ä¾‹å¦‚ï¼šåƒç´ å€¼åºåˆ—ä¸º[(255,0,0),(255,0,0),(0,255,0)]ï¼Œåˆ™å‹ç¼©åä¸º[((255,0,0),2),((0,255,0),1)]
         vector<tuple<int, int, int>> vals;
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
@@ -158,35 +158,35 @@ void compressImage(const string &input, const string &compressedFile) {
     }
 
     fout.close();
-    cout << "ÒÑÍê³ÉRLEÑ¹Ëõ£¬½á¹û±£´æÖÁ£º" << compressedFile << endl;
+    cout << "å·²å®ŒæˆRLEå‹ç¼©ï¼Œç»“æœä¿å­˜è‡³ï¼š" << compressedFile << endl;
 }
 
-// ÊµÏÖÍ¼Ïñ½âÑ¹µÄº¯Êı
-// ½«txt¸ñÊ½µÄÑ¹ËõÎÄ¼ş½âÑ¹Îªppm¸ñÊ½µÄÍ¼ÏñÎÄ¼ş
+// å®ç°å›¾åƒè§£å‹çš„å‡½æ•°
+// å°†txtæ ¼å¼çš„å‹ç¼©æ–‡ä»¶è§£å‹ä¸ºppmæ ¼å¼çš„å›¾åƒæ–‡ä»¶
 void decompressImage(const string &compressedFile, const string &output) {
     ifstream fin(compressedFile);
     int w, h, c;
-    fin >> w >> h >> c;//¶ÁÈ¡Í¼ÏñµÄ¿í¡¢¸ß¡¢Í¨µÀÊı
+    fin >> w >> h >> c;//è¯»å–å›¾åƒçš„å®½ã€é«˜ã€é€šé“æ•°
 
     if (c == 1) {
-        //»Ò¶ÈÍ¼Ïñ
+        //ç°åº¦å›¾åƒ
         vector<int> vals;
         int v, count;
         while (fin >> v >> count)
-            for (int i = 0; i < count; i++) vals.push_back(v);//¸ù¾İRLEÑ¹Ëõ¸ñÊ½»¹Ô­ÏñËØÖµĞòÁĞ
+            for (int i = 0; i < count; i++) vals.push_back(v);//æ ¹æ®RLEå‹ç¼©æ ¼å¼è¿˜åŸåƒç´ å€¼åºåˆ—
 
         CImg<unsigned char> img(w, h, 1, 1, 0);
         int idx = 0;
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
-                if (idx < (int)vals.size()) img(x, y) = vals[idx++];//½«»¹Ô­µÄÏñËØÖµÌî³äµ½Í¼Ïñ¶ÔÏóÖĞ
+                if (idx < (int)vals.size()) img(x, y) = vals[idx++];//å°†è¿˜åŸçš„åƒç´ å€¼å¡«å……åˆ°å›¾åƒå¯¹è±¡ä¸­
 
-        img.save_ascii(output.c_str());//ÏÈ±£´æÎªCImgµÄasciiÂë¸ñÊ½£¬ÔÙĞŞ¸ÄÆäÎÄ¼şÍ·²¿ĞÅÏ¢£¬±äÎª±ê×¼µÄppm¸ñÊ½
+        img.save_ascii(output.c_str());//å…ˆä¿å­˜ä¸ºCImgçš„asciiç æ ¼å¼ï¼Œå†ä¿®æ”¹å…¶æ–‡ä»¶å¤´éƒ¨ä¿¡æ¯ï¼Œå˜ä¸ºæ ‡å‡†çš„ppmæ ¼å¼
 
-        // È¥µô CImg ×Ô¶¨ÒåÍ·²¢Ìæ»»Îª P2 Í·
+        // å»æ‰ CImg è‡ªå®šä¹‰å¤´å¹¶æ›¿æ¢ä¸º P2 å¤´
         ifstream fin(output);
         string header_line;
-        std::getline(fin, header_line); // Ìø¹ıµÚÒ»ĞĞ
+        std::getline(fin, header_line); // è·³è¿‡ç¬¬ä¸€è¡Œ
         string data((istreambuf_iterator<char>(fin)), istreambuf_iterator<char>());
         fin.close();
 
@@ -197,17 +197,17 @@ void decompressImage(const string &compressedFile, const string &output) {
 
 
         img.display("Decompressed Gray");
-        cout << "ÒÑ½âÑ¹»Ò¶ÈÍ¼£º" << output << endl;
+        cout << "å·²è§£å‹ç°åº¦å›¾ï¼š" << output << endl;
     } else {
-        //²ÊÉ«Í¼Ïñ
+        //å½©è‰²å›¾åƒ
         vector<tuple<int, int, int>> vals;
         int r, g, b, count;
         while (fin >> r >> g >> b >> count)
-            for (int i = 0; i < count; i++) vals.push_back({r, g, b});//¸ù¾İRLEÑ¹Ëõ¸ñÊ½»¹Ô­ÏñËØÖµĞòÁĞ
+            for (int i = 0; i < count; i++) vals.push_back({r, g, b});//æ ¹æ®RLEå‹ç¼©æ ¼å¼è¿˜åŸåƒç´ å€¼åºåˆ—
 
         CImg<unsigned char> img(w, h, 1, 3, 0);
         int idx = 0;
-        //½«»¹Ô­µÄÏñËØÖµÌî³äµ½Í¼Ïñ¶ÔÏóÖĞ
+        //å°†è¿˜åŸçš„åƒç´ å€¼å¡«å……åˆ°å›¾åƒå¯¹è±¡ä¸­
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
                 if (idx < (int)vals.size()) {
@@ -217,7 +217,7 @@ void decompressImage(const string &compressedFile, const string &output) {
                     img(x, y, 0, 2) = B;
                 }
 
-        ofstream fout(output);//ÊÖ¶¯Ğ´Èë±ê×¼µÄP3¸ñÊ½£¨ppm¸ñÊ½²ÊÉ«Í¼£©
+        ofstream fout(output);//æ‰‹åŠ¨å†™å…¥æ ‡å‡†çš„P3æ ¼å¼ï¼ˆppmæ ¼å¼å½©è‰²å›¾ï¼‰
         fout << "P3\n" << img.width() << " " << img.height() << "\n255\n";
         for (int y = 0; y < img.height(); y++) {
             for (int x = 0; x < img.width(); x++) {
@@ -231,29 +231,29 @@ void decompressImage(const string &compressedFile, const string &output) {
         fout.close();
 
         img.display("Decompressed Color");
-        cout << "ÒÑ½âÑ¹²ÊÉ«Í¼£º" << output << endl;
+        cout << "å·²è§£å‹å½©è‰²å›¾ï¼š" << output << endl;
     }
     fin.close();
 }
 
 
 
-// Ö÷²Ëµ¥
+// ä¸»èœå•
 int main() {
     cout << "==============================" << endl;
-    cout << "  Project 2 - ¼òµ¥Í¼Ïñ´¦Àí³ÌĞò" << endl;
-    cout << "  Ê¹ÓÃ CImg ¿âÊµÏÖ" << endl;
+    cout << "  Project 2 - ç®€å•å›¾åƒå¤„ç†ç¨‹åº" << endl;
+    cout << "  ä½¿ç”¨ CImg åº“å®ç°" << endl;
     cout << "==============================" << endl;
 
     while (true) {
-        cout << "\nÇëÑ¡Ôñ¹¦ÄÜ£º" << endl;
-        cout << "1. ¶ÁÈ¡²¢ÏÔÊ¾Í¼Ïñ" << endl;
-        cout << "2. ²ÊÉ«Í¼Ïñ×ª»Ò¶È" << endl;
-        cout << "3. Í¼ÏñËõ·Å" << endl;
-        cout << "4. Í¼ÏñÑ¹Ëõ" << endl;
-        cout << "5. Í¼Ïñ½âÑ¹" << endl;
-        cout << "0. ÍË³ö³ÌĞò" << endl;
-        cout << "ÊäÈëÑ¡Ïî£º";
+        cout << "\nè¯·é€‰æ‹©åŠŸèƒ½ï¼š" << endl;
+        cout << "1. è¯»å–å¹¶æ˜¾ç¤ºå›¾åƒ" << endl;
+        cout << "2. å½©è‰²å›¾åƒè½¬ç°åº¦" << endl;
+        cout << "3. å›¾åƒç¼©æ”¾" << endl;
+        cout << "4. å›¾åƒå‹ç¼©" << endl;
+        cout << "5. å›¾åƒè§£å‹" << endl;
+        cout << "0. é€€å‡ºç¨‹åº" << endl;
+        cout << "è¾“å…¥é€‰é¡¹ï¼š";
 
         int choice;
         cin >> choice;
@@ -262,52 +262,52 @@ int main() {
         string input, output;
         switch (choice) {
         case 1:
-            cout << "ÇëÊäÈëÍ¼ÏñÎÄ¼şÃû£º";
+            cout << "è¯·è¾“å…¥å›¾åƒæ–‡ä»¶åï¼š";
             cin >> input;
             showImage(input);
             break;
 
         case 2:
-            cout << "ÇëÊäÈë²ÊÉ«Í¼ÏñÎÄ¼şÃû£º";
+            cout << "è¯·è¾“å…¥å½©è‰²å›¾åƒæ–‡ä»¶åï¼š";
             cin >> input;
-            cout << "ÇëÊäÈë»Ò¶ÈÍ¼Êä³öÎÄ¼şÃû£º";
+            cout << "è¯·è¾“å…¥ç°åº¦å›¾è¾“å‡ºæ–‡ä»¶åï¼š";
             cin >> output;
             colorToGray(input, output);
             break;
 
         case 3:
             int w, h;
-            cout << "ÇëÊäÈëÔ­Í¼ÎÄ¼şÃû£º";
+            cout << "è¯·è¾“å…¥åŸå›¾æ–‡ä»¶åï¼š";
             cin >> input;
-            cout << "ÊäÈëÄ¿±ê¿íºÍ¸ß£º";
+            cout << "è¾“å…¥ç›®æ ‡å®½å’Œé«˜ï¼š";
             cin >> w >> h;
-            cout << "ÇëÊäÈëÊä³öÎÄ¼şÃû£º";
+            cout << "è¯·è¾“å…¥è¾“å‡ºæ–‡ä»¶åï¼š";
             cin >> output;
             resizeImage(input, output, w, h);
             break;
 
         case 4:
-            cout << "ÇëÊäÈëÔ­Í¼ÎÄ¼şÃû£º";
+            cout << "è¯·è¾“å…¥åŸå›¾æ–‡ä»¶åï¼š";
             cin >> input;
-            cout << "ÇëÊäÈëÑ¹ËõÊä³öÎÄ¼şÃû(txt)£º";
+            cout << "è¯·è¾“å…¥å‹ç¼©è¾“å‡ºæ–‡ä»¶å(txt)ï¼š";
             cin >> output;
             compressImage(input, output);
             break;
 
         case 5:
-            cout << "ÇëÊäÈëÑ¹ËõÎÄ¼şÃû(txt)£º";
+            cout << "è¯·è¾“å…¥å‹ç¼©æ–‡ä»¶å(txt)ï¼š";
             cin >> input;
-            cout << "ÇëÊäÈë½âÑ¹Êä³öÎÄ¼şÃû(ppm)£º";
+            cout << "è¯·è¾“å…¥è§£å‹è¾“å‡ºæ–‡ä»¶å(ppm)ï¼š";
             cin >> output;
             decompressImage(input, output);
-            cout << "ÒÑÍê³É½âÑ¹£¬¿ÉÍ¨¹ı¹¦ÄÜ1²é¿´½âÑ¹ºóÍ¼Ïñ¡£" << endl;
+            cout << "å·²å®Œæˆè§£å‹ï¼Œå¯é€šè¿‡åŠŸèƒ½1æŸ¥çœ‹è§£å‹åå›¾åƒã€‚" << endl;
             break;
 
         default:
-                cout << "ÎŞĞ§Ñ¡Ïî£¬ÇëÖØĞÂÊäÈë£¡" << endl;
+                cout << "æ— æ•ˆé€‰é¡¹ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << endl;
         }
     }
 
-    cout << "³ÌĞò½áÊø¡£" << endl;
+    cout << "ç¨‹åºç»“æŸã€‚" << endl;
     return 0;
 }
