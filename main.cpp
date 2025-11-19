@@ -1,3 +1,4 @@
+//使用CImg库实现
 #include "CImg.h"
 #include <iostream>
 #include <vector>
@@ -20,10 +21,23 @@ void showImage(const string &filename) {
 
 
 // 彩色图像转灰度图像的函数
+
+CImg<unsigned char> rgbToGray(const CImg<unsigned char>& color) {
+    CImg<unsigned char> gray(color.width(), color.height(), 1, 1, 0);
+    cimg_forXY(color, x, y) {
+        unsigned char r = color(x,y,0,0);
+        unsigned char g = color(x,y,0,1);
+        unsigned char b = color(x,y,0,2);
+        // 使用常用的加权平均法转换为灰度值
+        gray(x,y) = (unsigned char)(0.299*r + 0.587*g + 0.114*b);
+    }
+    return gray;
+}
+
 void colorToGray(const string &input, const string &output) {
     CImg<unsigned char> color(input.c_str());
-    
-    CImg<unsigned char> gray = color.get_RGBtoYCbCr().get_channel(0);
+    // 调用颜色转换函数
+    CImg<unsigned char> gray = rgbToGray(color);
     gray.display("Gray Image");
 
     // 保存为 CImg 的 ASCII 格式
@@ -58,11 +72,57 @@ void colorToGray(const string &input, const string &output) {
 
 
 // 实现图像缩放的函数
+
+CImg<unsigned char> bilinearResize(const CImg<unsigned char>& src, int newW, int newH) {
+    int oldW = src.width();
+    int oldH = src.height();
+    int channels = src.spectrum();
+
+    CImg<unsigned char> dst(newW, newH, 1, channels, 0);
+
+    // 计算比例因子
+    double scaleX = (double)(oldW - 1) / (newW - 1);
+    double scaleY = (double)(oldH - 1) / (newH - 1);
+    //遍历每个像素位置，进行双线性插值计算
+    for (int y = 0; y < newH; y++) {
+        double srcY = y * scaleY;
+        int y1 = (int)srcY;
+        int y2 = min(y1 + 1, oldH - 1);
+        double b = srcY - y1;
+
+        for (int x = 0; x < newW; x++) {
+            double srcX = x * scaleX;
+            int x1 = (int)srcX;
+            int x2 = min(x1 + 1, oldW - 1);
+            double a = srcX - x1;
+            //若通道为1，则为灰度图像，直接插值
+            //若通道为3，则为彩色图像，对每个通道分别插值
+            for (int c = 0; c < channels; c++) {
+                double f11 = src(x1, y1, 0, c);
+                double f21 = src(x2, y1, 0, c);
+                double f12 = src(x1, y2, 0, c);
+                double f22 = src(x2, y2, 0, c);
+
+                // 双线性插值计算
+                double value =
+                    (1 - a) * (1 - b) * f11 +
+                    a * (1 - b) * f21 +
+                    (1 - a) * b * f12 +
+                    a * b * f22;
+
+                dst(x, y, 0, c) = (unsigned char)(value + 0.5);//四舍五入取整
+            }
+        }
+    }
+    return dst;
+}
+
+
 void resizeImage(const string &input, const string &output, int newW, int newH) {
     CImg<unsigned char> src(input.c_str());//读取输入图像文件
 
     //调用Cimg库中的resize函数，使用interpolation_type=1的双线性插值实现缩放
-    CImg<unsigned char> resized = src.resize(newW, newH,1);
+    CImg<unsigned char> resized = bilinearResize(src, newW,newH);
     resized.display("Resized Image");
 
     int spectrum = resized.spectrum();  // 通道数，用于区分彩色图像和灰度图像
@@ -240,6 +300,11 @@ void decompressImage(const string &compressedFile, const string &output) {
 
 // 主菜单
 int main() {
+
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+    system("chcp 65001 > nul");
+
     cout << "==============================" << endl;
     cout << "  Project 2 - 简单图像处理程序" << endl;
     cout << "  使用 CImg 库实现" << endl;
